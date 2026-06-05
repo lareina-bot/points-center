@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>AI Magic Playground 福豆查询中心</title>
+<title>积分查询</title>
 <style>
 body{font-family:sans-serif;background:#f0f4ff;margin:0;padding:0;}
 header{background:#4F6CF7;color:#fff;text-align:center;padding:30px 0;font-size:24px;font-weight:bold;}
@@ -12,13 +12,16 @@ input[type=text]{width:100%;padding:8px;font-size:16px;border-radius:5px;border:
 button{margin-top:10px;padding:10px 16px;background:#4F6CF7;color:#fff;border:none;border-radius:6px;font-size:16px;cursor:pointer;}
 #result{margin-top:20px;padding:15px;background:#fff;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.1);}
 .record{border-top:1px solid #eee;padding:5px 0;}
+.tip{color:#666;font-size:14px;margin-top:5px;}
+.footer{margin-top:20px;color:#999;font-size:12px;text-align:center;}
 </style>
 </head>
 <body>
-<header>AI Magic Playground 福豆查询中心</header>
+<header>积分查询</header>
 <main>
-<label for="queryInput">请输入姓名或工号</label>
-<input type="text" id="queryInput" placeholder="例如：Lareina Meng 或 B06382">
+<label for="queryInput">请输入工号查询积分</label>
+<input type="text" id="queryInput" placeholder="例如：TR00000">
+<p class="tip">仅支持工号查询，不区分大小写</p>
 <button onclick="searchRecord()">查询积分</button>
 
 <div id="result" style="display:none;">
@@ -28,6 +31,8 @@ button{margin-top:10px;padding:10px 16px;background:#4F6CF7;color:#fff;border:no
 <div id="recentRecords"></div>
 </div>
 
+<p class="footer">如积分数据存在疑问，请联系管理员核实</p>
+
 <script>
 let records = [];
 
@@ -36,7 +41,6 @@ fetch('records.json')
   .then(res => res.json())
   .then(data => {
     records = data.map(r => {
-      // 兼容旧格式
       return {
         name: r.name || r.姓名 || "",
         empId: r.empId || r.工号 || "",
@@ -53,11 +57,11 @@ fetch('records.json')
   });
 
 function searchRecord() {
-  const query = document.getElementById('queryInput').value.trim();
-  if (!query) return alert('请输入姓名或工号');
+  const query = document.getElementById('queryInput').value.trim().toLowerCase();
+  if (!query) return alert('请输入工号');
 
   const userRecords = records.filter(r =>
-    r.name.includes(query) || r.empId.includes(query)
+    r.empId.toLowerCase() === query
   );
 
   if (!userRecords.length) {
